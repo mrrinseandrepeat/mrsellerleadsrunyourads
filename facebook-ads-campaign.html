@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Ads Campaign Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2942 100%);
+            min-height: 100vh;
+            padding: 20px 16px;
+            color: #f1f5f9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #22c55e, #84cc16);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #cbd5e1;
+            font-size: 0.95em;
+            margin-bottom: 20px;
+        }
+
+        .box {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .box-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9em;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 1em;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #22c55e;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .helper-text {
+            font-size: 0.85em;
+            color: #94a3b8;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* Tier Selection */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .tier-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tier-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .tier-box:hover {
+            border-color: #22c55e;
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .tier-box.selected {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .tier-label {
+            font-size: 0.9em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .tier-setup {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #84cc16;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 4px;
+        }
+
+        .tier-management {
+            font-size: 1em;
+            color: #22c55e;
+            margin-bottom: 8px;
+        }
+
+        .tier-check {
+            font-size: 1.2em;
+            color: #22c55e;
+            display: none;
+        }
+
+        .tier-box.selected .tier-check {
+            display: block;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        .hidden-section.show {
+            display: block;
+        }
+
+        /* Cost Breakdown */
+        .cost-section {
+            background: rgba(34, 197, 94, 0.15);
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cost-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 15px;
+        }
+
+        .cost-breakdown {
+            background: rgba(34, 197, 94, 0.05);
+            border-left: 4px solid #22c55e;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .cost-line {
+            display: flex;
+            justify-content: space-between;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .cost-line.total {
+            font-weight: 600;
+            color: #22c55e;
+            border-top: 1px solid rgba(34, 197, 94, 0.2);
+            padding-top: 6px;
+            margin-top: 6px;
+        }
+
+        .cost-line.actual-spend {
+            color: #84cc16;
+            font-weight: 600;
+        }
+
+        /* ROI Section - ROAS Theme */
+        .roi-section {
+            background: rgba(34, 197, 94, 0.15);
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .roi-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 15px;
+        }
+
+        .roi-subtitle {
+            font-size: 0.9em;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .roi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 500px) {
+            .roi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .roi-item {
+            background: #22c55e;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .roi-label {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .roi-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+        }
+
+        .roi-metrics {
+            background: rgba(34, 197, 94, 0.05);
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .metric-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+        }
+
+        .metric-value {
+            color: #84cc16;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Adjustable Metrics */
+        .metrics-adjust {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metrics-adjust-title {
+            font-size: 0.9em;
+            color: #22c55e;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metrics-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-input-group label {
+            font-size: 0.8em;
+            color: #cbd5e1;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .metric-input-group input {
+            padding: 8px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            color: #f1f5f9;
+            font-size: 0.9em;
+        }
+
+        .metric-input-group input:focus {
+            outline: none;
+            border-color: #22c55e;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .disclaimer {
+            background: rgba(132, 204, 22, 0.1);
+            border-left: 4px solid #84cc16;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #cbd5e1;
+            font-style: italic;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #22c55e, #84cc16);
+            color: #0f172a;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="margin-bottom: 20px;">
+                <img src="https://mrsellerleads.com/logo.png" alt="MR Seller Leads" style="max-width: 150px; height: auto;">
+            </div>
+            <h1>MR Seller Leads<br><span style="font-size: 0.6em; background: linear-gradient(135deg, #84cc16, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Facebook Ads Campaign Management</span></h1>
+            <p>Let us run your campaigns. See exactly what it costs and what you could earn.</p>
+        </div>
+
+        <!-- STEP 1: Budget Input -->
+        <div class="box">
+            <div class="box-title">💰 Your Monthly Ad Budget</div>
+            
+            <div class="input-group">
+                <label>How much can you allocate monthly toward ad spend?</label>
+                <input type="number" id="monthlyBudget" placeholder="$0" step="100" min="0" value="5000">
+                <div class="helper-text">This is the money that goes directly toward Facebook ads (not including setup or management fees)</div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Tier Selection -->
+        <div class="box">
+            <div class="box-title">🎯 Choose Your Plan</div>
+            <p style="color: #cbd5e1; margin-bottom: 20px;">Select the option that works best for your business:</p>
+
+            <div class="tier-grid">
+                <div class="tier-box" onclick="selectTier('a')" id="tierA">
+                    <div class="tier-check">✓</div>
+                    <div class="tier-label">PLAN A</div>
+                    <div class="tier-setup">$2,000</div>
+                    <div class="tier-management">Setup + $1,000/month</div>
+                    <div style="font-size: 0.8em; color: #94a3b8; margin-top: 8px;">Best for long-term commitment</div>
+                </div>
+
+                <div class="tier-box" onclick="selectTier('b')" id="tierB">
+                    <div class="tier-check">✓</div>
+                    <div class="tier-label">PLAN B</div>
+                    <div class="tier-setup">$1,500</div>
+                    <div class="tier-management">Setup + $1,250/month</div>
+                    <div style="font-size: 0.8em; color: #94a3b8; margin-top: 8px;">Best for testing first</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Cost Breakdown -->
+        <div class="cost-section hidden-section" id="costSection">
+            <div class="cost-title">💡 Your Investment Breakdown</div>
+
+            <!-- Month 1 -->
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 1em; font-weight: 600; color: #cbd5e1; margin-bottom: 12px;">Month 1</div>
+                <div class="cost-breakdown">
+                    <div class="cost-line">
+                        <span>One-Time Setup Fee:</span>
+                        <span id="m1Setup">$0</span>
+                    </div>
+                    <div class="cost-line">
+                        <span>Monthly Management:</span>
+                        <span id="m1Management">$0</span>
+                    </div>
+                    <div class="cost-line actual-spend">
+                        <span>Facebook Ad Spend:</span>
+                        <span id="m1AdSpend">$0</span>
+                    </div>
+                    <div class="cost-line total">
+                        <span>Total Month 1 Investment:</span>
+                        <span id="m1Total">$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Month 2+ -->
+            <div>
+                <div style="font-size: 1em; font-weight: 600; color: #cbd5e1; margin-bottom: 12px;">Month 2+</div>
+                <div class="cost-breakdown">
+                    <div class="cost-line">
+                        <span>Monthly Management:</span>
+                        <span id="m2Management">$0</span>
+                    </div>
+                    <div class="cost-line actual-spend">
+                        <span>Facebook Ad Spend:</span>
+                        <span id="m2AdSpend">$0</span>
+                    </div>
+                    <div class="cost-line total">
+                        <span>Total Monthly (Ongoing):</span>
+                        <span id="m2Total">$0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4: ROI Projection -->
+        <div class="roi-section hidden-section" id="roiSection">
+            <div class="roi-title">📊 Estimated Return on Investment</div>
+            <div class="roi-subtitle">Based on $30 average cost per lead on Facebook</div>
+
+            <!-- Key Metrics (Green boxes) -->
+            <div class="roi-grid">
+                <div class="roi-item">
+                    <div class="roi-label">Monthly Leads</div>
+                    <div class="roi-value" id="roiLeads">0</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-label">Contracts</div>
+                    <div class="roi-value" id="roiContracts">0</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-label">Closings</div>
+                    <div class="roi-value" id="roiClosings">0</div>
+                </div>
+                <div class="roi-item">
+                    <div class="roi-label">Return on Ad Spend</div>
+                    <div class="roi-value" id="roiROAS">0x</div>
+                </div>
+            </div>
+
+            <!-- Detailed Breakdown -->
+            <div class="roi-metrics">
+                <div class="metric-row">
+                    <span class="metric-label">Ad Spend (Month 2+):</span>
+                    <span class="metric-value" id="metricAdSpend">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Estimated CPL:</span>
+                    <span class="metric-value">$30</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Leads Generated:</span>
+                    <span class="metric-value" id="metricLeads">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Lead to Contract Ratio:</span>
+                    <span class="metric-value" id="metricRatio">1:20</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Contracts:</span>
+                    <span class="metric-value" id="metricContracts">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Contract Fallout Rate:</span>
+                    <span class="metric-value" id="metricFallout">50%</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Actual Closings:</span>
+                    <span class="metric-value" id="metricClosings">0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Avg Assignment Fee:</span>
+                    <span class="metric-value" id="metricFee">$10,000</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Monthly Revenue:</span>
+                    <span class="metric-value" id="metricRevenue">$0</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Monthly Profit (After Mgmt):</span>
+                    <span class="metric-value" id="metricProfit">$0</span>
+                </div>
+            </div>
+
+            <!-- Adjustable Metrics -->
+            <div class="metrics-adjust">
+                <div class="metrics-adjust-title">Adjust your assumptions to match your business:</div>
+                
+                <div class="metrics-row">
+                    <div class="metric-input-group">
+                        <label>Lead to Contract Ratio</label>
+                        <input type="number" id="ratioInput" placeholder="20" step="1" min="1" value="20">
+                        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 2px;">(How many leads per contract?)</div>
+                    </div>
+                    <div class="metric-input-group">
+                        <label>Contract Fallout Rate (%)</label>
+                        <input type="number" id="falloutInput" placeholder="50" step="1" min="0" max="100" value="50">
+                        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 2px;">(% that don't close)</div>
+                    </div>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="metric-input-group">
+                        <label>Avg Assignment Fee ($)</label>
+                        <input type="number" id="feeInput" placeholder="10000" step="500" min="0" value="10000">
+                        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 2px;">(Your avg deal value)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <strong>*CPL Disclaimer:</strong> Estimated at $30 average CPL on Facebook. Actual cost per lead varies by market, audience, and campaign strategy. This is a baseline projection based on our 12-month average, but is always subject to specific client campaigns, markets, and audience targeting.
+            </div>
+
+            <button class="cta-button" onclick="contactUs()">Ready to Get Started? Contact Us</button>
+        </div>
+
+        <div class="footer">
+            <p>💡 Have questions? Reach out and let's discuss your campaign strategy.</p>
+        </div>
+    </div>
+
+    <script>
+        let selectedTier = null;
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(value);
+        }
+
+        function selectTier(tier) {
+            selectedTier = tier;
+            
+            // Update UI
+            document.getElementById('tierA').classList.remove('selected');
+            document.getElementById('tierB').classList.remove('selected');
+            
+            if (tier === 'a') {
+                document.getElementById('tierA').classList.add('selected');
+            } else {
+                document.getElementById('tierB').classList.add('selected');
+            }
+
+            // Show cost and ROI sections
+            document.getElementById('costSection').classList.add('show');
+            document.getElementById('roiSection').classList.add('show');
+
+            // Calculate
+            calculateAll();
+        }
+
+        function calculateAll() {
+            if (!selectedTier) return;
+
+            // Get tier info
+            const tiers = {
+                a: { setup: 2000, management: 1000 },
+                b: { setup: 1500, management: 1250 }
+            };
+            const tier = tiers[selectedTier];
+
+            // Get inputs
+            const monthlyBudget = parseFloat(document.getElementById('monthlyBudget').value) || 0;
+            const ratio = parseFloat(document.getElementById('ratioInput').value) || 20;
+            const fallout = parseFloat(document.getElementById('falloutInput').value) || 50;
+            const avgFee = parseFloat(document.getElementById('feeInput').value) || 10000;
+            const cpl = 30;
+
+            // Month 1 Breakdown
+            const m1Setup = tier.setup;
+            const m1Management = tier.management;
+            const m1AdSpend = monthlyBudget - m1Management; // After management, rest goes to ads
+            const m1Total = m1Setup + m1Management + m1AdSpend;
+
+            document.getElementById('m1Setup').textContent = formatCurrency(m1Setup);
+            document.getElementById('m1Management').textContent = formatCurrency(m1Management);
+            document.getElementById('m1AdSpend').textContent = formatCurrency(m1AdSpend);
+            document.getElementById('m1Total').textContent = formatCurrency(m1Total);
+
+            // Month 2+ Breakdown
+            const m2Management = tier.management;
+            const m2AdSpend = monthlyBudget - m2Management;
+            const m2Total = m2Management + m2AdSpend;
+
+            document.getElementById('m2Management').textContent = formatCurrency(m2Management);
+            document.getElementById('m2AdSpend').textContent = formatCurrency(m2AdSpend);
+            document.getElementById('m2Total').textContent = formatCurrency(m2Total);
+
+            // ROI Calculation (based on Month 2+ ad spend, since Month 1 has setup)
+            const leads = m2AdSpend / cpl;
+            const contracts = ratio > 0 ? leads / ratio : 0;
+            const closeRate = (100 - fallout) / 100;
+            const closings = contracts * closeRate;
+            const revenue = closings * avgFee;
+            const profit = revenue - m2Management; // Profit after management fee
+            const roas = m2AdSpend > 0 ? revenue / m2AdSpend : 0;
+
+            // Update ROI display (green boxes)
+            document.getElementById('roiLeads').textContent = leads.toFixed(0);
+            document.getElementById('roiContracts').textContent = contracts.toFixed(1);
+            document.getElementById('roiClosings').textContent = closings.toFixed(1);
+            document.getElementById('roiROAS').textContent = roas.toFixed(2) + 'x';
+
+            // Update detailed metrics
+            document.getElementById('metricAdSpend').textContent = formatCurrency(m2AdSpend);
+            document.getElementById('metricLeads').textContent = leads.toFixed(0);
+            document.getElementById('metricRatio').textContent = `1:${ratio}`;
+            document.getElementById('metricContracts').textContent = contracts.toFixed(1);
+            document.getElementById('metricFallout').textContent = fallout + '%';
+            document.getElementById('metricClosings').textContent = closings.toFixed(1);
+            document.getElementById('metricFee').textContent = formatCurrency(avgFee);
+            document.getElementById('metricRevenue').textContent = formatCurrency(revenue);
+            document.getElementById('metricProfit').textContent = formatCurrency(profit);
+        }
+
+        function contactUs() {
+            // This would link to contact form or email
+            alert('Thanks for your interest! Contact us at [your contact method]');
+        }
+
+        // Add listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', calculateAll);
+        });
+
+        // Initial calculation when page loads
+        calculateAll();
+    </script>
+</body>
+</html>
