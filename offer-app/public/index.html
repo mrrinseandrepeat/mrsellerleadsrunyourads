@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1f3a5f">
+  <title>Offer Sender</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <span class="brand">Offer Sender</span>
+    <span id="who" class="who"></span>
+    <button id="logout" class="link-btn" hidden>Log out</button>
+  </header>
+
+  <main>
+    <!-- PIN -->
+    <section id="login-view" hidden>
+      <form id="login-form" class="card">
+        <h1>Enter your PIN</h1>
+        <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" required aria-label="PIN">
+        <button type="submit" class="primary">Unlock</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <!-- Form -->
+    <section id="form-view" hidden>
+      <div class="tabs">
+        <button class="tab active" data-tab="new">New offer</button>
+        <button class="tab" data-tab="history">History</button>
+        <button class="tab" data-tab="activity" id="activity-tab" hidden>Log</button>
+      </div>
+
+      <div id="tab-new">
+        <p id="config-warning" class="error" hidden>SignNow keys are not set on the server yet. Offers will fail until they are.</p>
+        <form id="offer-form" class="card" novalidate>
+          <label>Document type
+            <select id="template-picker"></select>
+          </label>
+          <div id="fields"></div>
+          <div id="form-errors" class="error" role="alert"></div>
+          <button type="submit" id="submit" class="primary">Create signing link</button>
+        </form>
+      </div>
+
+      <div id="tab-history" hidden>
+        <div class="card">
+          <div class="row-between">
+            <h2>Recent offers</h2>
+            <button id="refresh-history" class="link-btn">Refresh</button>
+          </div>
+          <div id="history-list"><p class="muted">Loading...</p></div>
+        </div>
+      </div>
+
+      <div id="tab-activity" hidden>
+        <div class="card">
+          <h2>Activity log</h2>
+          <div id="activity-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="result-view" hidden>
+      <div class="card">
+        <h1 id="result-title">Ready to sign</h1>
+        <p id="result-summary" class="muted"></p>
+        <label>Signing link
+          <textarea id="result-link" readonly rows="4"></textarea>
+        </label>
+        <button id="copy-link" class="primary">Copy link</button>
+        <a id="sms-link" class="secondary button">Open in Messages</a>
+        <p class="muted small">The link expires in about 45 minutes. If the seller opens it late, use Regenerate in History.</p>
+        <button id="back-to-form" class="secondary">New offer</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="busy" class="busy" hidden>
+    <div class="spinner"></div>
+    <p id="busy-text">Working...</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

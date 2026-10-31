@@ -1,0 +1,36 @@
+# Render Blueprint for the Offer Sender app (offer-app/).
+# Render reads this file when you create a "Blueprint" from this repository.
+services:
+  - type: web
+    name: offer-sender
+    runtime: node
+    rootDir: offer-app
+    plan: starter # needed for the disk below; the free plan forgets history on every restart
+    region: ohio
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    disk:
+      name: offer-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SIGNNOW_API_BASE
+        value: https://api.signnow.com
+      # The values below are secret. Render asks for them when you create the Blueprint.
+      - key: ACCESS_PINS
+        sync: false
+      - key: ADMIN_USERS
+        sync: false
+      - key: SIGNNOW_BASIC_TOKEN
+        sync: false
+      - key: SIGNNOW_USERNAME
+        sync: false
+      - key: SIGNNOW_PASSWORD
+        sync: false
