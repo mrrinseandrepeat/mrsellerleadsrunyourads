@@ -14,19 +14,16 @@ Your SignNow keys stay on the server. The browser never sees them, the template 
 
 ---
 
-## Part 1: Get your SignNow API credentials
+## Part 1: Get your SignNow API key
 
-The template lives in your production SignNow account (app.signnow.com). That means the app needs **production** credentials. A sandbox (developer) account can't see your real templates, so don't use one.
+1. Log in at **https://app.signnow.com** with the account that owns the "Team Wholesale Documents" folder, and open the **SignNow API** dashboard.
+2. Click **Apps and Keys** in the left menu and copy your **API key**. Treat it like a password: it can create and send documents as you.
 
-1. Log in at **https://app.signnow.com** with the account that owns the "Team Wholesale Documents" folder.
-2. Open the **API** section. Depending on your SignNow version, it's either in the left sidebar or under your profile menu → **API** (sometimes labeled "API Dashboard" or "Integrations → API").
-3. If there's no application yet, click **Add API application** (any name, like "Offer Sender").
-4. Open the application and copy the **Basic Authorization Token**. It's a long string ending in `=`.
-5. You'll also need the SignNow **login email and password** for that same account. The app uses them to get short-lived access tokens.
+**Development mode = watermarked documents.** A green banner at the top saying "Enjoying the signNow API in Development mode?" means your API account is still on the free development tier. In that tier, documents sent through the API carry a test watermark, so they're not fit for real sellers. To remove the watermark, click **Start Free Trial** (250 watermark-free invites) or **Upgrade**, or ask **Contact Sales** for API pricing. **Plan Usage** shows where you stand. Your regular SignNow subscription and the Claude connector don't change this; the API has its own plan.
 
-**Plan check:** SignNow controls which plans can use the production API. If the API page only offers sandbox/test keys, or production calls fail with a plan or permission error, contact SignNow support or sales and ask for "production REST API access for my account". Mention that you use document group templates and embedded signing. I couldn't confirm the exact plan requirements from here, so treat their answer as final.
+Do your first test (Part 3) while still in Development mode. The test confirms everything works, and the watermark is expected. Go live once you've upgraded.
 
-**If you use Google sign-in or SSO for SignNow:** the password login above may not work. Ask SignNow how to get an API key or access token for your account instead. Add it in Render under Environment as `SIGNNOW_API_KEY`, and leave the three password settings empty.
+**Fallback:** if the API key ever doesn't work, the app can log in a different way. Leave `SIGNNOW_API_KEY` empty and set `SIGNNOW_BASIC_TOKEN` (shown on your app under Apps and Keys), `SIGNNOW_USERNAME` (your login email) and `SIGNNOW_PASSWORD`.
 
 ## Part 2: Deploy on Render
 
@@ -41,9 +38,8 @@ Render costs about **$7.25/month**: the Starter web service plus a 1 GB disk tha
    |---|---|
    | `ACCESS_PINS` | One PIN per person, as `Name:PIN`, separated by commas. Example: `Matt:482913,Mike:118822`. Use 6+ digits. |
    | `ADMIN_USERS` | Names (from ACCESS_PINS) allowed to see the Log tab. Example: `Matt` |
-   | `SIGNNOW_BASIC_TOKEN` | The Basic Authorization Token from Part 1 |
-   | `SIGNNOW_USERNAME` | Your SignNow login email |
-   | `SIGNNOW_PASSWORD` | Your SignNow password |
+   | `SIGNNOW_API_KEY` | The API key from Part 1 |
+   | `SIGNNOW_BASIC_TOKEN`, `SIGNNOW_USERNAME`, `SIGNNOW_PASSWORD` | Leave empty (fallback only, see Part 1) |
 
 5. Click **Apply**. The first deploy takes a few minutes. When it's live, Render shows a URL like `https://offer-sender-xxxx.onrender.com`.
 6. Open that URL on your phone and enter your PIN.
@@ -83,7 +79,7 @@ The document-type picker at the top of the form shows it automatically. All the 
 npm install
 npm test              # unit + HTTP tests against a fake SignNow
 npm run check-template
-ACCESS_PINS=Me:1234 SIGNNOW_BASIC_TOKEN=... SIGNNOW_USERNAME=... SIGNNOW_PASSWORD=... npm start
+ACCESS_PINS=Me:1234 SIGNNOW_API_KEY=... npm start
 ```
 
 | File | Purpose |

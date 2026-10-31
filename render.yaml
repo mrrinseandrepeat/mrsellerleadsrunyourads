@@ -28,6 +28,9 @@ services:
         sync: false
       - key: ADMIN_USERS
         sync: false
+      - key: SIGNNOW_API_KEY # from SignNow API dashboard -> Apps and Keys
+        sync: false
+      # Fallback login, only if the API key doesn't work. Leave empty otherwise.
       - key: SIGNNOW_BASIC_TOKEN
         sync: false
       - key: SIGNNOW_USERNAME
